@@ -4,6 +4,56 @@ import { AddTestInput, Nested, Test } from "../schemas/TestSchema";
 @Resolver(of => Test)
 export class TestResolver implements ResolverInterface<Test> {
 
+    private readonly nestedCollection: Nested[] = generateNestedData();
+    private readonly testCollection: Test[] = generateTestData(this.nestedCollection);
+
+    @Query(returns => [Test])
+    async users(): Promise<Test[]> {
+        return await this.testCollection;
+    }
+
+    @Query(returns => Test, {nullable: true})
+    // Method signature.
+    async user(
+        // Argument decorator and parameter. We're passing in an id string into this method.
+        @Arg("id") id: string
+    ): Promise<Test | undefined> { // We're returning a promise or undefined if we can't find
+        const test = await this.testCollection.find(test => test.id === id);
+        return test;
+    }
+
+    @Mutation(returns => Test)
+    async addTest(
+        @Arg("test") addTestInput: AddTestInput // Take in our AddUserInput InputType
+    ): Promise<Test> {
+        let nestedName = "Unemployed";
+        if (addTestInput.nestedName) {
+            nestedName = addTestInput.nestedName;
+        }
+        // Find the name of the company the user put in
+        let nested = this.nestedCollection.find(nested => nested.name === nestedName);
+        // If we can't find it then default to unemployed
+        if (nested === undefined) {
+            nested = this.nestedCollection.find(nested => nested.name === "Unemployed");
+        }
+        // Create a user with Object.assign
+        // They explicitly said to not use a constructor so I guess I have to do it like this?
+        const test = Object.assign(new Test(), {
+            id: Math.floor(Math.random() * 100000).toString(),
+            name: addTestInput.name,
+            num: addTestInput.num,
+            nested: nested,
+        });
+        // Push user to our pseudo-database
+        await this.testCollection.push(test);
+        // return
+        return test;
+    }
+
+    @FieldResolver()
+    async nested( @Root() test: Test ): Promise<Nested> {
+        return await test.nested;
+    }
 }
 
 // Helper Functions and Constants
@@ -48,7 +98,7 @@ function generateNestedData(): Nested[] {
     ];
 }
 
-function generateUserData(nested: Nested[]): Test[] {
+function generateTestData(nested: Nested[]): Test[] {
     const usersData = [
         createTest({
             name: "Roy",
