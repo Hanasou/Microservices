@@ -1,5 +1,5 @@
 import { Arg, FieldResolver, Mutation, Query, Resolver, ResolverInterface, Root } from "type-graphql";
-import { AddTestInput, Nested, Test } from "../schemas/TestSchema";
+import { AddTestInput, Nested, Test } from "../schemas/test-schema";
 
 @Resolver(of => Test)
 export class TestResolver implements ResolverInterface<Test> {

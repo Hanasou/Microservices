@@ -1,4 +1,4 @@
-import {TestResolver} from './TestResolver';
+import {TestResolver} from './test-resolver';
 
 export const resolvers = [
     TestResolver,
