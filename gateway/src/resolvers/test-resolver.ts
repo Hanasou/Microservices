@@ -1,4 +1,4 @@
-import { Arg, FieldResolver, Mutation, Query, Resolver, ResolverInterface, Root } from "type-graphql";
+import { Arg, Authorized, FieldResolver, Mutation, Query, Resolver, ResolverInterface, Root } from "type-graphql";
 import { AddTestInput, Nested, Test } from "../schemas/test-schema";
 
 @Resolver(of => Test)
@@ -7,14 +7,15 @@ export class TestResolver implements ResolverInterface<Test> {
     private readonly nestedCollection: Nested[] = generateNestedData();
     private readonly testCollection: Test[] = generateTestData(this.nestedCollection);
 
+    @Authorized()
     @Query(returns => [Test])
-    async users(): Promise<Test[]> {
+    async tests(): Promise<Test[]> {
         return await this.testCollection;
     }
 
     @Query(returns => Test, {nullable: true})
     // Method signature.
-    async user(
+    async test(
         // Argument decorator and parameter. We're passing in an id string into this method.
         @Arg("id") id: string
     ): Promise<Test | undefined> { // We're returning a promise or undefined if we can't find

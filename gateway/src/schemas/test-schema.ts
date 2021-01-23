@@ -1,4 +1,15 @@
-import {ObjectType, Field, ID, Int, InputType} from "type-graphql";
+import {ObjectType, Field, ID, Int, InputType, Authorized} from "type-graphql";
+
+// This type must be placed before Test because it's nested in Test
+// This is pretty stupid
+@ObjectType()
+export class Nested {
+    @Field(type => ID)
+    id: string;
+
+    @Field()
+    name: string;
+}
 
 @ObjectType()
 export class Test {
@@ -17,14 +28,6 @@ export class Test {
 
 }
 
-@ObjectType()
-export class Nested {
-    @Field(type => ID)
-    id: string;
-
-    @Field()
-    name: string;
-}
 
 @InputType()
 export class AddTestInput {

@@ -5,6 +5,7 @@ import cors from 'cors';
 import { graphqlHTTP } from 'express-graphql';
 import { buildSchema } from 'type-graphql';
 import { resolvers } from './resolvers/resolvers';
+import { customAuthChecker } from './auth/auth-checker';
 
 const app = express();
 
@@ -15,6 +16,7 @@ async function bootstrap() {
     const mySchema = await buildSchema({
         resolvers: resolvers,
         emitSchemaFile: schemaPath,
+        authChecker: customAuthChecker,
     });
 
     // enable cors
