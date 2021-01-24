@@ -2,14 +2,29 @@ syntax = "proto3";
 
 package auth;
 
-option go_package = "authpb";
+option go_package = "src/authpb";
 
 message AuthRequest {
-    string first_name = 1;
+    string username = 1;
     string password = 2;
 }
 
 message AuthResponse {
     string access_token = 1;
     string refresh_token = 2;
+}
+
+message RefreshRequest {
+    string username = 1;
+    string refresh_token = 2;
+}
+
+message RefreshResponse {
+    string access_token = 1;
+}
+
+service AuthService {
+    rpc Auth(AuthRequest) returns (AuthResponse) {};
+
+    rpc Refresh(RefreshRequest) returns (RefreshResponse) {};
 }

@@ -12,21 +12,21 @@ import (
 var jwtKey = []byte("my_secret_key")
 
 // GenTokens generates an access token and a refresh token
-func GenTokens() (string, string, error) {
+func GenTokens(username string) (string, string, error) {
 
 	// Set expiry times
 	rtExpiresAt := time.Now().Add(time.Hour * 24).Unix()
 
 	// Create claims
 	rt := &models.Token{
-		Username: "test",
+		Username: username,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: rtExpiresAt,
 		},
 	}
 
 	// Create token
-	tokenString, err := RefreshToken()
+	tokenString, err := RefreshToken(username)
 	if err != nil {
 		log.Println("Error in generating access token")
 		return "", "", err
@@ -43,13 +43,13 @@ func GenTokens() (string, string, error) {
 }
 
 // RefreshToken generates a new access token
-func RefreshToken() (string, error) {
+func RefreshToken(username string) (string, error) {
 	// Set expiry time
 	tkExpiresAt := time.Now().Add(time.Minute * 100000).Unix()
 
 	// Set claims
 	tk := &models.Token{
-		Username: "test",
+		Username: username,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: tkExpiresAt,
 		},
@@ -64,4 +64,14 @@ func RefreshToken() (string, error) {
 	}
 
 	return tokenString, nil
+}
+
+// VerifyToken verifies a token
+func VerifyToken(tokenString string) {
+
+}
+
+// CheckPassword compares a password to its hash
+func CheckPassword(password string) {
+
 }
