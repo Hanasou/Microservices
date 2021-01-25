@@ -111,7 +111,13 @@ func VerifyToken(tokenString string) ([]byte, error) {
 	}
 }
 
-// CheckPassword compares a password to its hash
-func CheckPassword(password string, hash string) {
+// CheckPassword compares a password to its hash returns true if password matches hash
+func CheckPassword(password string, hash string) (bool, error) {
+	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+	if err != nil && err == bcrypt.ErrMismatchedHashAndPassword { //Password does not match!
+		log.Println("Password does not match")
+		return false, err
+	}
 
+	return true, nil
 }
