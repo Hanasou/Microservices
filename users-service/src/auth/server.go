@@ -30,11 +30,15 @@ func (*server) Auth(ctx context.Context, req *authpb.AuthRequest) (*authpb.AuthR
 
 func (*server) Refresh(ctx context.Context, req *authpb.RefreshRequest) (*authpb.RefreshResponse, error) {
 	username := req.GetUsername()
-	//refreshToken := req.GetRefreshToken()
+	refreshToken := req.GetRefreshToken()
 
 	// TODO: Verify refresh token
-
-	accessToken, err := RefreshToken(username)
+	jwtKey, err := VerifyToken(refreshToken)
+	if err != nil {
+		log.Println("Error in verifying token")
+		return nil, err
+	}
+	accessToken, err := RefreshToken(username, jwtKey)
 	if err != nil {
 		log.Println("Error in Refresh: Could not get new access token")
 		return nil, err

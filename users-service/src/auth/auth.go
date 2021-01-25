@@ -6,6 +6,7 @@ import (
 
 	"github.com/Hanasou/Microservices/users-service/src/models"
 	"github.com/dgrijalva/jwt-go"
+	"golang.org/x/crypto/bcrypt"
 )
 
 // Initialize jwtKey
@@ -26,7 +27,7 @@ func GenTokens(username string) (string, string, error) {
 	}
 
 	// Create token
-	tokenString, err := RefreshToken(username)
+	tokenString, err := RefreshToken(username, jwtKey)
 	if err != nil {
 		log.Println("Error in generating access token")
 		return "", "", err
@@ -43,7 +44,7 @@ func GenTokens(username string) (string, string, error) {
 }
 
 // RefreshToken generates a new access token
-func RefreshToken(username string) (string, error) {
+func RefreshToken(username string, jwtKey []byte) (string, error) {
 	// Set expiry time
 	tkExpiresAt := time.Now().Add(time.Minute * 100000).Unix()
 
@@ -66,12 +67,51 @@ func RefreshToken(username string) (string, error) {
 	return tokenString, nil
 }
 
-// VerifyToken verifies a token
-func VerifyToken(tokenString string) {
+// AddUserToDb adds a user to the database
+func AddUserToDb() {
 
 }
 
+// GetUserFromDb gets a user from db
+func GetUserFromDb() {
+
+}
+
+// HashPassword hashes a password and returns the hash
+func HashPassword(password string) (string, error) {
+	// Generate password hash
+	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		msg := "Error in hashing"
+		log.Println(msg)
+		return "", err
+	}
+	return string(hash), nil
+}
+
+// VerifyToken verifies a token and returns a new key to sign another one
+func VerifyToken(tokenString string) ([]byte, error) {
+	claims := &models.Token{}
+
+	token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
+		return jwtKey, nil
+	})
+	if err != nil {
+		log.Println("Error in parsing token")
+		if err == jwt.ErrSignatureInvalid {
+			log.Println("Invalid token")
+			return []byte{}, err
+		}
+		return []byte{}, err
+	}
+	if token.Valid {
+		return jwtKey, nil
+	} else {
+		return []byte{}, nil
+	}
+}
+
 // CheckPassword compares a password to its hash
-func CheckPassword(password string) {
+func CheckPassword(password string, hash string) {
 
 }
