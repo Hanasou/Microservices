@@ -9,6 +9,8 @@ import (
 
 type server struct{}
 
+// TODO: Generate some gRPC code for an AddUserRequest
+
 // Auth generates an AuthResponse from an AuthRequest
 func (*server) Auth(ctx context.Context, req *authpb.AuthRequest) (*authpb.AuthResponse, error) {
 	username := req.GetUsername()
