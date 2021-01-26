@@ -67,16 +67,6 @@ func RefreshToken(username string, jwtKey []byte) (string, error) {
 	return tokenString, nil
 }
 
-// AddUserToDb adds a user to the database
-func AddUserToDb() {
-
-}
-
-// GetUserFromDb gets a user from db
-func GetUserFromDb() {
-
-}
-
 // HashPassword hashes a password and returns the hash
 func HashPassword(password string) (string, error) {
 	// Generate password hash
@@ -120,4 +110,9 @@ func CheckPassword(password string, hash string) (bool, error) {
 	}
 
 	return true, nil
+}
+
+// BootstrapServer sets up our gRPC server
+func BootstrapServer() {
+
 }

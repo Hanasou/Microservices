@@ -4,6 +4,15 @@ package auth;
 
 option go_package = "src/authpb";
 
+message CreateUserRequest {
+    string username = 1;
+    string password = 2;
+}
+
+message CreateUserResponse {
+    AuthResponse tokens = 1;
+}
+
 message AuthRequest {
     string username = 1;
     string password = 2;
