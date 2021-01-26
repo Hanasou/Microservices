@@ -111,8 +111,3 @@ func CheckPassword(password string, hash string) (bool, error) {
 
 	return true, nil
 }
-
-// BootstrapServer sets up our gRPC server
-func BootstrapServer() {
-
-}

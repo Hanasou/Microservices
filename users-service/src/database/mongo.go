@@ -11,7 +11,7 @@ import (
 var DbCollection *mongo.Collection
 
 // SetupMongoDb sets up Mongodb
-func SetupMongoDb(ctx context.Context) {
+func SetupMongoDb(ctx context.Context) (*mongo.Client, error) {
 	log.Println("Connecting to MongoDB")
 	// TODO: Replace connection string and move to config file
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI(
@@ -19,8 +19,10 @@ func SetupMongoDb(ctx context.Context) {
 	))
 	if err != nil {
 		log.Fatal(err)
+		return nil, err
 	}
 
 	// TODO: Replace database and collection names and move to config file
 	DbCollection = client.Database("grpcdb").Collection("blog")
+	return client, nil
 }
