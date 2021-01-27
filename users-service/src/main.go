@@ -7,8 +7,8 @@ import (
 	"os/signal"
 	"time"
 
-	"github.com/Hanasou/Microservices/users-service/src/auth"
 	"github.com/Hanasou/Microservices/users-service/src/database"
+	"github.com/Hanasou/Microservices/users-service/src/server"
 )
 
 func setupEverything() {
@@ -20,7 +20,7 @@ func setupEverything() {
 		return
 	}
 
-	lis, s, err := auth.BootstrapServer()
+	lis, s, err := server.BootstrapServer()
 	if err != nil {
 		log.Fatalln("Server error", err)
 		return

@@ -1,29 +1,60 @@
-package auth
+package server
 
 import (
 	"context"
 	"log"
 	"net"
 
+	"github.com/Hanasou/Microservices/users-service/src/auth"
 	"github.com/Hanasou/Microservices/users-service/src/authpb"
+	"github.com/Hanasou/Microservices/users-service/src/database"
 	"google.golang.org/grpc"
 )
 
 type server struct{}
 
 func (*server) CreateUser(ctx context.Context, req *authpb.CreateUserRequest) (*authpb.CreateUserResponse, error) {
-	return nil, nil
-}
+	username := req.GetUsername()
+	password := req.GetPassword()
 
-// TODO: Generate some gRPC code for an AddUserRequest
+	err := database.AddUserToDb(username, password)
+	if err != nil {
+		log.Println("Error in adding user to db")
+		return nil, err
+	}
+
+	accessToken, refreshToken, err := auth.GenTokens(username)
+	if err != nil {
+		log.Println("Error in token generation")
+		return nil, err
+	}
+	response := &authpb.CreateUserResponse{
+		Tokens: &authpb.AuthResponse{
+			AccessToken:  accessToken,
+			RefreshToken: refreshToken,
+		},
+	}
+	return response, nil
+}
 
 // Auth generates an AuthResponse from an AuthRequest
 func (*server) Auth(ctx context.Context, req *authpb.AuthRequest) (*authpb.AuthResponse, error) {
 	username := req.GetUsername()
+	password := req.GetPassword()
 
-	// TODO: Verify Password
+	// Verify Password
+	user, err := database.GetUserFromDb(username)
+	if err != nil {
+		log.Println("Error in getting user")
+		return nil, err
+	}
 
-	accessToken, refreshToken, err := GenTokens(username)
+	if _, err = auth.CheckPassword(password, user.PasswordHash); err != nil {
+		log.Println("Passwords do not match")
+		return nil, err
+	}
+
+	accessToken, refreshToken, err := auth.GenTokens(username)
 	if err != nil {
 		log.Println("Error in Auth: Could not generate tokens")
 		return nil, err
@@ -41,12 +72,12 @@ func (*server) Refresh(ctx context.Context, req *authpb.RefreshRequest) (*authpb
 	refreshToken := req.GetRefreshToken()
 
 	// TODO: Verify refresh token
-	jwtKey, err := VerifyToken(refreshToken)
+	jwtKey, err := auth.VerifyToken(refreshToken)
 	if err != nil {
 		log.Println("Error in verifying token")
 		return nil, err
 	}
-	accessToken, err := RefreshToken(username, jwtKey)
+	accessToken, err := auth.RefreshToken(username, jwtKey)
 	if err != nil {
 		log.Println("Error in Refresh: Could not get new access token")
 		return nil, err
