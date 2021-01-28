@@ -15,25 +15,24 @@ type secrets struct {
 	tokenKey string
 }
 
-func getJwtKey() (string, error) {
+// GetJwtKey gets the key
+func GetJwtKey() []byte {
 	data, err := ioutil.ReadFile("./secrets.json")
 	if err != nil {
-		log.Println("Error in opening file")
-		return "", err
+		log.Fatalln("Error in opening file")
 	}
 
 	var secrets secrets
 	err = json.Unmarshal(data, &secrets)
 	if err != nil {
-		log.Println("Error in unmarshalling json")
-		return "", err
+		log.Fatalln("Error in unmarshalling json")
 	}
 
-	return secrets.tokenKey, nil
+	jwtKey := []byte(secrets.tokenKey)
+	return jwtKey
 }
 
-// Initialize jwtKey
-var jwtKey = []byte("my_secret_key")
+var jwtKey []byte = GetJwtKey()
 
 // GenTokens generates an access token and a refresh token
 func GenTokens(username string) (string, string, error) {
