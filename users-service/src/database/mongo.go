@@ -50,7 +50,7 @@ func SetupMongoDb(ctx context.Context) (*mongo.Client, error) {
 		connectionString,
 	))
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalln("Connection error: ", err)
 		return nil, err
 	}
 

@@ -19,7 +19,7 @@ type secrets struct {
 func GetJwtKey() []byte {
 	data, err := ioutil.ReadFile("./secrets.json")
 	if err != nil {
-		log.Fatalln("Error in opening file")
+		log.Fatalln("Error in opening file", err)
 	}
 
 	var secrets secrets

@@ -2,5 +2,5 @@
 /gateway/node_modules
 
 # Configurations
-/users-service/src/database/config.json
-/users-service/src/auth/secrets.json
+/users-service/src/config.json
+/users-service/src/secrets.json
