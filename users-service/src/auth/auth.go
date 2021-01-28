@@ -1,6 +1,8 @@
 package auth
 
 import (
+	"encoding/json"
+	"io/ioutil"
 	"log"
 	"time"
 
@@ -8,6 +10,27 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"golang.org/x/crypto/bcrypt"
 )
+
+type secrets struct {
+	tokenKey string
+}
+
+func getJwtKey() (string, error) {
+	data, err := ioutil.ReadFile("./secrets.json")
+	if err != nil {
+		log.Println("Error in opening file")
+		return "", err
+	}
+
+	var secrets secrets
+	err = json.Unmarshal(data, &secrets)
+	if err != nil {
+		log.Println("Error in unmarshalling json")
+		return "", err
+	}
+
+	return secrets.tokenKey, nil
+}
 
 // Initialize jwtKey
 var jwtKey = []byte("my_secret_key")

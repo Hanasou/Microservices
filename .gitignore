@@ -3,3 +3,4 @@
 
 # Configurations
 /users-service/src/database/config.json
+/users-service/src/auth/secrets.json
