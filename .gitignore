@@ -1,2 +1,5 @@
 # Modules
 /gateway/node_modules
+
+# Configurations
+/users-service/src/database/config.json
