@@ -11,15 +11,15 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-type config struct {
-	credentials creds
-	database    string
-	collection  string
+type Config struct {
+	Credentials Creds
+	Database    string
+	Collection  string
 }
 
-type creds struct {
-	username string
-	password string
+type Creds struct {
+	Username string
+	Password string
 }
 
 var DbCollection *mongo.Collection
@@ -35,7 +35,7 @@ func SetupMongoDb(ctx context.Context) (*mongo.Client, error) {
 		return nil, err
 	}
 
-	var config config
+	var config Config
 	err = json.Unmarshal(data, &config)
 	if err != nil {
 		log.Println("Error in unmarshalling json")
@@ -43,7 +43,7 @@ func SetupMongoDb(ctx context.Context) (*mongo.Client, error) {
 	}
 
 	connectionString := fmt.Sprintf("mongodb+srv://%s:%s@cluster0.zrbnr.mongodb.net/?retryWrites=true&w=majority",
-		config.credentials.username, config.credentials.password)
+		config.Credentials.Username, config.Credentials.Password)
 
 	// TODO: Replace connection string and move to config file
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI(
@@ -55,6 +55,6 @@ func SetupMongoDb(ctx context.Context) (*mongo.Client, error) {
 	}
 
 	// TODO: Replace database and collection names and move to config file
-	DbCollection = client.Database(config.database).Collection(config.collection)
+	DbCollection = client.Database(config.Database).Collection(config.Collection)
 	return client, nil
 }

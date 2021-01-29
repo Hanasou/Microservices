@@ -11,8 +11,8 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-type secrets struct {
-	tokenKey string
+type Secrets struct {
+	TokenKey string
 }
 
 // GetJwtKey gets the key
@@ -22,13 +22,13 @@ func GetJwtKey() []byte {
 		log.Fatalln("Error in opening file", err)
 	}
 
-	var secrets secrets
+	var secrets Secrets
 	err = json.Unmarshal(data, &secrets)
 	if err != nil {
 		log.Fatalln("Error in unmarshalling json")
 	}
 
-	jwtKey := []byte(secrets.tokenKey)
+	jwtKey := []byte(secrets.TokenKey)
 	return jwtKey
 }
 
