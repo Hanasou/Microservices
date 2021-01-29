@@ -40,6 +40,7 @@ func setupEverything() {
 	mongoClient.Disconnect(context.TODO())
 	log.Println("End of Program")
 }
+
 func main() {
 	setupEverything()
 }

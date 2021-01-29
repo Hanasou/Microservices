@@ -31,14 +31,14 @@ func SetupMongoDb(ctx context.Context) (*mongo.Client, error) {
 	// Read config file
 	data, err := ioutil.ReadFile("./config.json")
 	if err != nil {
-		log.Println("Error in opening file")
+		log.Fatalln("Error in opening file")
 		return nil, err
 	}
 
 	var config Config
 	err = json.Unmarshal(data, &config)
 	if err != nil {
-		log.Println("Error in unmarshalling json")
+		log.Fatalln("Error in unmarshalling json")
 		return nil, err
 	}
 
