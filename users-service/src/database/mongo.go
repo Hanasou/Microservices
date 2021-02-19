@@ -7,20 +7,10 @@ import (
 	"io/ioutil"
 	"log"
 
+	"github.com/Hanasou/Microservices/users-service/src/models"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
-
-type Config struct {
-	Credentials Creds
-	Database    string
-	Collection  string
-}
-
-type Creds struct {
-	Username string
-	Password string
-}
 
 var DbCollection *mongo.Collection
 
@@ -35,7 +25,7 @@ func SetupMongoDb(ctx context.Context) (*mongo.Client, error) {
 		return nil, err
 	}
 
-	var config Config
+	var config models.Config
 	err = json.Unmarshal(data, &config)
 	if err != nil {
 		log.Fatalln("Error in unmarshalling json")
@@ -55,6 +45,6 @@ func SetupMongoDb(ctx context.Context) (*mongo.Client, error) {
 	}
 
 	// TODO: Replace database and collection names and move to config file
-	DbCollection = client.Database(config.Database).Collection(config.Collection)
+	// DbCollection = client.Database(config.Database).Collection(config.Collection)
 	return client, nil
 }
