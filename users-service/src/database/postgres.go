@@ -11,6 +11,8 @@ import (
 	"github.com/jackc/pgx/v4"
 )
 
+var postgres *pgx.Conn
+
 func SetupPostgres(ctx context.Context) (*pgx.Conn, error) {
 	log.Println("Connecting to Postgres Database")
 
@@ -37,6 +39,8 @@ func SetupPostgres(ctx context.Context) (*pgx.Conn, error) {
 		log.Fatalln("Can't connect to database:", err)
 		return nil, err
 	}
+
+	postgres = conn
 
 	return conn, nil
 }
