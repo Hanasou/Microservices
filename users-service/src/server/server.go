@@ -5,25 +5,28 @@ import (
 	"log"
 	"net"
 
-	"github.com/Hanasou/Microservices/users-service/src/auth"
 	"github.com/Hanasou/Microservices/users-service/src/authpb"
+	"github.com/Hanasou/Microservices/users-service/src/core"
 	"github.com/Hanasou/Microservices/users-service/src/database"
 	"google.golang.org/grpc"
 )
 
 type server struct{}
 
+// Decouple the core logic from the APIs
+
+// CreateUser sends a request to make a user into the database and returns tokens for authentication
 func (*server) CreateUser(ctx context.Context, req *authpb.CreateUserRequest) (*authpb.CreateUserResponse, error) {
 	username := req.GetUsername()
 	password := req.GetPassword()
 
-	err := database.AddUserToDb(username, password)
+	err := database.AddUserToMongoDb(ctx, username, password)
 	if err != nil {
 		log.Println("Error in adding user to db")
 		return nil, err
 	}
 
-	accessToken, refreshToken, err := auth.GenTokens(username)
+	accessToken, refreshToken, err := core.GenTokens(username)
 	if err != nil {
 		log.Println("Error in token generation")
 		return nil, err
@@ -43,18 +46,18 @@ func (*server) Auth(ctx context.Context, req *authpb.AuthRequest) (*authpb.AuthR
 	password := req.GetPassword()
 
 	// Verify Password
-	user, err := database.GetUserFromDb(username)
+	user, err := database.GetUserFromMongoDb(ctx, username)
 	if err != nil {
 		log.Println("Error in getting user")
 		return nil, err
 	}
 
-	if _, err = auth.CheckPassword(password, user.PasswordHash); err != nil {
+	if _, err = core.CheckPassword(password, user.PasswordHash); err != nil {
 		log.Println("Passwords do not match")
 		return nil, err
 	}
 
-	accessToken, refreshToken, err := auth.GenTokens(username)
+	accessToken, refreshToken, err := core.GenTokens(username)
 	if err != nil {
 		log.Println("Error in Auth: Could not generate tokens")
 		return nil, err
@@ -72,12 +75,12 @@ func (*server) Refresh(ctx context.Context, req *authpb.RefreshRequest) (*authpb
 	refreshToken := req.GetRefreshToken()
 
 	// TODO: Verify refresh token
-	jwtKey, err := auth.VerifyToken(refreshToken)
+	jwtKey, err := core.VerifyToken(refreshToken)
 	if err != nil {
 		log.Println("Error in verifying token")
 		return nil, err
 	}
-	accessToken, err := auth.RefreshToken(username, jwtKey)
+	accessToken, err := core.RefreshToken(username, jwtKey)
 	if err != nil {
 		log.Println("Error in Refresh: Could not get new access token")
 		return nil, err

@@ -14,7 +14,7 @@ import (
 func setupEverything() {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
-	conn, err := database.SetupPostgres(ctx)
+	conn, err := database.SetupMongoDb(ctx)
 	if err != nil {
 		log.Fatalln("Database error", err)
 		return
@@ -36,8 +36,8 @@ func setupEverything() {
 	s.Stop()
 	log.Println("Closing listener")
 	(*lis).Close()
-	log.Println("Closing Postgres connection")
-	conn.Close(ctx)
+	log.Println("Closing Database connection")
+	conn.Disconnect(ctx)
 	log.Println("End of Program")
 }
 

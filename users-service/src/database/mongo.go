@@ -7,7 +7,10 @@ import (
 	"io/ioutil"
 	"log"
 
+	"github.com/Hanasou/Microservices/users-service/src/core"
 	"github.com/Hanasou/Microservices/users-service/src/models"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -45,6 +48,43 @@ func SetupMongoDb(ctx context.Context) (*mongo.Client, error) {
 	}
 
 	// TODO: Replace database and collection names and move to config file
-	// DbCollection = client.Database(config.Database).Collection(config.Collection)
+	//DbCollection = client.Database(config.Database).Collection(config.Collection)
 	return client, nil
+}
+
+// AddUserToDb adds a user to the database
+func AddUserToMongoDb(ctx context.Context, username string, password string) error {
+	passwordHash, err := core.HashPassword(password)
+	if err != nil {
+		log.Println("Hashing error")
+		return err
+	}
+	userDocument := models.User{
+		Username:     username,
+		PasswordHash: passwordHash,
+	}
+
+	_, err = DbCollection.InsertOne(ctx, userDocument)
+	if err != nil {
+		log.Println("Insert failed")
+		return err
+	}
+
+	return nil
+}
+
+// GetUserFromDb gets a user from db
+func GetUserFromMongoDb(ctx context.Context, username string) (*models.User, error) {
+	result := &models.User{}
+	filter := bson.D{
+		primitive.E{Key: "username", Value: username},
+	}
+
+	err := DbCollection.FindOne(ctx, filter).Decode(&result)
+	if err != nil {
+		log.Println("Error in getting user from Db")
+		return nil, err
+	}
+
+	return result, nil
 }
