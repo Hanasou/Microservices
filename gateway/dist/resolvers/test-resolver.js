@@ -15,6 +15,46 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.TestResolver = void 0;
 const type_graphql_1 = require("type-graphql");
 const test_schema_1 = require("../schemas/test-schema");
+/**
+ * Query Example
+ * query {
+ *   test(id: "23") {
+ *     // Include all the fields that we want returned. It can include some, all, or none of them
+ *     id
+ *     name
+ *     num
+ *     nested {
+ *       id
+ *       name
+ *     }
+ *   }
+ * }
+ */
+/**
+ * Mutation Example
+ * Note that the thing inside the mutation is just a query. $test is the variable we're passing in to add into our data
+ * The values inside addTest is what we're querying for as a response.
+ * mutation AddTest($test: AddTestInput!) {
+ *   addTest(test: $test) {
+ *     id
+ *     name
+ *     num
+ *     nested {
+ *       id
+ *       name
+ *     }
+ *   }
+ * }
+ *
+ * Example Variable
+ * {
+ *   "test": {
+ *     "name": "Example",
+ *     "num": 99
+ *     "nestedName": "Nested Example"
+ *   }
+ * }
+ */
 let TestResolver = class TestResolver {
     constructor() {
         this.nestedCollection = generateNestedData();
@@ -23,6 +63,8 @@ let TestResolver = class TestResolver {
     async tests() {
         return await this.testCollection;
     }
+    // This decorator marks this function as a GraphQl query
+    // Queries are essentially how we get data
     // Method signature.
     async test(
     // Argument decorator and parameter. We're passing in an id string into this method.
@@ -30,9 +72,10 @@ let TestResolver = class TestResolver {
         const test = await this.testCollection.find(test => test.id === id);
         return test;
     }
+    // The mutation decorator is used when we want to modify data
     async addTest(addTestInput // Take in our AddUserInput InputType
     ) {
-        let nestedName = "Unemployed";
+        let nestedName = "Undefined";
         if (addTestInput.nestedName) {
             nestedName = addTestInput.nestedName;
         }
@@ -40,7 +83,9 @@ let TestResolver = class TestResolver {
         let nested = this.nestedCollection.find(nested => nested.name === nestedName);
         // If we can't find it then default to unemployed
         if (nested === undefined) {
-            nested = this.nestedCollection.find(nested => nested.name === "Unemployed");
+            nested = createNested({
+                name: "Undefined",
+            });
         }
         // Create a user with Object.assign
         // They explicitly said to not use a constructor so I guess I have to do it like this?
@@ -55,6 +100,7 @@ let TestResolver = class TestResolver {
         // return
         return test;
     }
+    // The FieldResolver decoration is used to get nested fields
     async nested(test) {
         return await test.nested;
     }

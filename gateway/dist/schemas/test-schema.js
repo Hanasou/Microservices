@@ -11,6 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AddTestInput = exports.Test = exports.Nested = void 0;
 const type_graphql_1 = require("type-graphql");
+// This typed is a type that's nested in our Test type
 // This type must be placed before Test because it's nested in Test
 // This is pretty stupid
 let Nested = class Nested {
