@@ -1,7 +1,10 @@
 # Modules
 /gateway/node_modules
-/gateway/notes
 
 # Configurations
 /users-service/src/config.json
 /users-service/src/secrets.json
+
+# Notes
+/gateway/notes
+/notes
