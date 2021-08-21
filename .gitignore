@@ -1,5 +1,6 @@
 # Modules
 /gateway/node_modules
+/gateway/notes
 
 # Configurations
 /users-service/src/config.json
