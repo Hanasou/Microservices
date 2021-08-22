@@ -7,12 +7,10 @@ import { graphqlHTTP } from 'express-graphql';
 import { buildSchema } from 'type-graphql';
 import { resolvers } from './resolvers/resolvers';
 import { customAuthChecker } from './auth/auth-checker';
-import { AuthServiceClient } from './protobuf/auth';
 
 // global express app
 const app = express();
 // global gRPC client
-const client = new AuthServiceClient("localhost:4001", grpc.credentials.createInsecure());
 
 async function bootstrap() {
     
