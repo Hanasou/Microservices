@@ -7,7 +7,6 @@ import (
 
 	"github.com/Hanasou/Microservices/users-service/src/authpb"
 	"github.com/Hanasou/Microservices/users-service/src/core"
-	"github.com/Hanasou/Microservices/users-service/src/database"
 	"google.golang.org/grpc"
 )
 
@@ -20,24 +19,7 @@ func (*server) CreateUser(ctx context.Context, req *authpb.CreateUserRequest) (*
 	username := req.GetUsername()
 	password := req.GetPassword()
 
-	err := database.AddUserToMongoDb(ctx, username, password)
-	if err != nil {
-		log.Println("Error in adding user to db")
-		return nil, err
-	}
-
-	accessToken, refreshToken, err := core.GenTokens(username)
-	if err != nil {
-		log.Println("Error in token generation")
-		return nil, err
-	}
-	response := &authpb.CreateUserResponse{
-		Tokens: &authpb.AuthResponse{
-			AccessToken:  accessToken,
-			RefreshToken: refreshToken,
-		},
-	}
-	return response, nil
+	return core.CreateUser(ctx, username, password)
 }
 
 // Auth generates an AuthResponse from an AuthRequest
@@ -45,51 +27,14 @@ func (*server) Auth(ctx context.Context, req *authpb.AuthRequest) (*authpb.AuthR
 	username := req.GetUsername()
 	password := req.GetPassword()
 
-	// Verify Password
-	user, err := database.GetUserFromMongoDb(ctx, username)
-	if err != nil {
-		log.Println("Error in getting user")
-		return nil, err
-	}
-
-	if _, err = core.CheckPassword(password, user.PasswordHash); err != nil {
-		log.Println("Passwords do not match")
-		return nil, err
-	}
-
-	accessToken, refreshToken, err := core.GenTokens(username)
-	if err != nil {
-		log.Println("Error in Auth: Could not generate tokens")
-		return nil, err
-	}
-
-	response := &authpb.AuthResponse{
-		AccessToken:  accessToken,
-		RefreshToken: refreshToken,
-	}
-	return response, nil
+	return core.Auth(ctx, username, password)
 }
 
 func (*server) Refresh(ctx context.Context, req *authpb.RefreshRequest) (*authpb.RefreshResponse, error) {
 	username := req.GetUsername()
 	refreshToken := req.GetRefreshToken()
 
-	// TODO: Verify refresh token
-	jwtKey, err := core.VerifyToken(refreshToken)
-	if err != nil {
-		log.Println("Error in verifying token")
-		return nil, err
-	}
-	accessToken, err := core.RefreshToken(username, jwtKey)
-	if err != nil {
-		log.Println("Error in Refresh: Could not get new access token")
-		return nil, err
-	}
-
-	response := &authpb.RefreshResponse{
-		AccessToken: accessToken,
-	}
-	return response, nil
+	return core.Refresh(ctx, username, refreshToken)
 }
 
 // BootstrapServer sets up our gRPC server

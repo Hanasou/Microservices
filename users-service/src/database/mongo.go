@@ -7,7 +7,6 @@ import (
 	"io/ioutil"
 	"log"
 
-	"github.com/Hanasou/Microservices/users-service/src/core"
 	"github.com/Hanasou/Microservices/users-service/src/models"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -53,18 +52,13 @@ func SetupMongoDb(ctx context.Context) (*mongo.Client, error) {
 }
 
 // AddUserToDb adds a user to the database
-func AddUserToMongoDb(ctx context.Context, username string, password string) error {
-	passwordHash, err := core.HashPassword(password)
-	if err != nil {
-		log.Println("Hashing error")
-		return err
-	}
+func AddUserToMongoDb(ctx context.Context, username string, passwordHash string) error {
 	userDocument := models.User{
 		Username:     username,
 		PasswordHash: passwordHash,
 	}
 
-	_, err = DbCollection.InsertOne(ctx, userDocument)
+	_, err := DbCollection.InsertOne(ctx, userDocument)
 	if err != nil {
 		log.Println("Insert failed")
 		return err
