@@ -1,5 +1,17 @@
 /* eslint-disable */
 import Long from "long";
+import {
+  makeGenericClientConstructor,
+  ChannelCredentials,
+  ChannelOptions,
+  UntypedServiceImplementation,
+  handleUnaryCall,
+  Client,
+  ClientUnaryCall,
+  Metadata,
+  CallOptions,
+  ServiceError,
+} from "@grpc/grpc-js";
 import _m0 from "protobufjs/minimal";
 
 export const protobufPackage = "auth";
@@ -455,48 +467,106 @@ export const RefreshResponse = {
   },
 };
 
-export interface AuthService {
-  Auth(request: AuthRequest): Promise<AuthResponse>;
-  Refresh(request: RefreshRequest): Promise<RefreshResponse>;
-  CreateUser(request: CreateUserRequest): Promise<CreateUserResponse>;
+export const AuthServiceService = {
+  auth: {
+    path: "/auth.AuthService/Auth",
+    requestStream: false,
+    responseStream: false,
+    requestSerialize: (value: AuthRequest) =>
+      Buffer.from(AuthRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer) => AuthRequest.decode(value),
+    responseSerialize: (value: AuthResponse) =>
+      Buffer.from(AuthResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => AuthResponse.decode(value),
+  },
+  refresh: {
+    path: "/auth.AuthService/Refresh",
+    requestStream: false,
+    responseStream: false,
+    requestSerialize: (value: RefreshRequest) =>
+      Buffer.from(RefreshRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer) => RefreshRequest.decode(value),
+    responseSerialize: (value: RefreshResponse) =>
+      Buffer.from(RefreshResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => RefreshResponse.decode(value),
+  },
+  createUser: {
+    path: "/auth.AuthService/CreateUser",
+    requestStream: false,
+    responseStream: false,
+    requestSerialize: (value: CreateUserRequest) =>
+      Buffer.from(CreateUserRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer) => CreateUserRequest.decode(value),
+    responseSerialize: (value: CreateUserResponse) =>
+      Buffer.from(CreateUserResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => CreateUserResponse.decode(value),
+  },
+} as const;
+
+export interface AuthServiceServer extends UntypedServiceImplementation {
+  auth: handleUnaryCall<AuthRequest, AuthResponse>;
+  refresh: handleUnaryCall<RefreshRequest, RefreshResponse>;
+  createUser: handleUnaryCall<CreateUserRequest, CreateUserResponse>;
 }
 
-export class AuthServiceClientImpl implements AuthService {
-  private readonly rpc: Rpc;
-  constructor(rpc: Rpc) {
-    this.rpc = rpc;
-    this.Auth = this.Auth.bind(this);
-    this.Refresh = this.Refresh.bind(this);
-    this.CreateUser = this.CreateUser.bind(this);
-  }
-  Auth(request: AuthRequest): Promise<AuthResponse> {
-    const data = AuthRequest.encode(request).finish();
-    const promise = this.rpc.request("auth.AuthService", "Auth", data);
-    return promise.then((data) => AuthResponse.decode(new _m0.Reader(data)));
-  }
-
-  Refresh(request: RefreshRequest): Promise<RefreshResponse> {
-    const data = RefreshRequest.encode(request).finish();
-    const promise = this.rpc.request("auth.AuthService", "Refresh", data);
-    return promise.then((data) => RefreshResponse.decode(new _m0.Reader(data)));
-  }
-
-  CreateUser(request: CreateUserRequest): Promise<CreateUserResponse> {
-    const data = CreateUserRequest.encode(request).finish();
-    const promise = this.rpc.request("auth.AuthService", "CreateUser", data);
-    return promise.then((data) =>
-      CreateUserResponse.decode(new _m0.Reader(data))
-    );
-  }
+export interface AuthServiceClient extends Client {
+  auth(
+    request: AuthRequest,
+    callback: (error: ServiceError | null, response: AuthResponse) => void
+  ): ClientUnaryCall;
+  auth(
+    request: AuthRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: AuthResponse) => void
+  ): ClientUnaryCall;
+  auth(
+    request: AuthRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: AuthResponse) => void
+  ): ClientUnaryCall;
+  refresh(
+    request: RefreshRequest,
+    callback: (error: ServiceError | null, response: RefreshResponse) => void
+  ): ClientUnaryCall;
+  refresh(
+    request: RefreshRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: RefreshResponse) => void
+  ): ClientUnaryCall;
+  refresh(
+    request: RefreshRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: RefreshResponse) => void
+  ): ClientUnaryCall;
+  createUser(
+    request: CreateUserRequest,
+    callback: (error: ServiceError | null, response: CreateUserResponse) => void
+  ): ClientUnaryCall;
+  createUser(
+    request: CreateUserRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: CreateUserResponse) => void
+  ): ClientUnaryCall;
+  createUser(
+    request: CreateUserRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: CreateUserResponse) => void
+  ): ClientUnaryCall;
 }
 
-interface Rpc {
-  request(
-    service: string,
-    method: string,
-    data: Uint8Array
-  ): Promise<Uint8Array>;
-}
+export const AuthServiceClient = makeGenericClientConstructor(
+  AuthServiceService,
+  "auth.AuthService"
+) as unknown as {
+  new (
+    address: string,
+    credentials: ChannelCredentials,
+    options?: Partial<ChannelOptions>
+  ): AuthServiceClient;
+};
 
 type Builtin =
   | Date

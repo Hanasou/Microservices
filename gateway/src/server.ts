@@ -1,16 +1,21 @@
 import "reflect-metadata";
 import express from 'express';
 import cors from 'cors';
+import grpc from '@grpc/grpc-js';
 // This library is a sort of compatibility layer between graphql and express
 import { graphqlHTTP } from 'express-graphql';
 import { buildSchema } from 'type-graphql';
 import { resolvers } from './resolvers/resolvers';
 import { customAuthChecker } from './auth/auth-checker';
+import { AuthServiceClient } from './protobuf/auth';
 
+// global express app
 const app = express();
+// global gRPC client
+const client = new AuthServiceClient("localhost:4001", grpc.credentials.createInsecure());
 
 async function bootstrap() {
-
+    
     // Build our schema
     const schemaPath = "./schemagql/schema.gql"
     const mySchema = await buildSchema({
