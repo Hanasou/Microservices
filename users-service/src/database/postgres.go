@@ -32,7 +32,7 @@ func SetupPostgres(ctx context.Context) (*pgx.Conn, error) {
 
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
 		"password=%s dbname=%s sslmode=disable",
-		config.Host, config.Port, config.Credentials.Username, config.Credentials.Password, config.Database)
+		config.DbConfigs.Host, config.DbConfigs.Port, config.DbConfigs.Credentials.Username, config.DbConfigs.Credentials.Password, config.DbConfigs.Database)
 
 	conn, err := pgx.Connect(ctx, psqlInfo)
 	if err != nil {

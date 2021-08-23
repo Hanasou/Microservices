@@ -12,3 +12,10 @@ services:
       - '4000'
     ports:
       - '4000:4000'
+  mongo:
+    image: mongo
+    container_name: mongo
+    ports: "27017:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=pass

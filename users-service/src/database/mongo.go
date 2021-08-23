@@ -34,8 +34,8 @@ func SetupMongoDb(ctx context.Context) (*mongo.Client, error) {
 		return nil, err
 	}
 
-	connectionString := fmt.Sprintf("mongodb+srv://%s:%s@cluster0.zrbnr.mongodb.net/?retryWrites=true&w=majority",
-		config.Credentials.Username, config.Credentials.Password)
+	connectionString := fmt.Sprintf("mongodb://%s:%s@mongo:27017/",
+		config.DbConfigs.Credentials.Username, config.DbConfigs.Credentials.Password)
 
 	// TODO: Replace connection string and move to config file
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI(
@@ -47,7 +47,7 @@ func SetupMongoDb(ctx context.Context) (*mongo.Client, error) {
 	}
 
 	// TODO: Replace database and collection names and move to config file
-	//DbCollection = client.Database(config.Database).Collection(config.Collection)
+	DbCollection = client.Database(config.DbConfigs.Database).Collection(config.DbConfigs.Collection)
 	return client, nil
 }
 

@@ -39,7 +39,7 @@ func (*server) Refresh(ctx context.Context, req *authpb.RefreshRequest) (*authpb
 
 // BootstrapServer sets up our gRPC server
 func BootstrapServer() (*net.Listener, *grpc.Server, error) {
-	lis, err := net.Listen("tcp", "0.0.0.0:50051")
+	lis, err := net.Listen("tcp", "0.0.0.0:4001")
 	if err != nil {
 		log.Fatalln("Failed to listen", err)
 	}

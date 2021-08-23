@@ -44,7 +44,7 @@ import grpc from '@grpc/grpc-js';
  * }
  */
 
-const authClient = new AuthServiceClient("localhost:4001", grpc.credentials.createInsecure());
+//const authClient = new AuthServiceClient("localhost:4001", grpc.credentials.createInsecure());
 @Resolver(of => User)
 export class AuthResolver {
 
